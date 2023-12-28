@@ -66,7 +66,7 @@ def main():
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()
 
-        GV.blob1.shrink(1)
+        GV.blob1.shrink(30/FPS)
 
         pygame.display.update()
         clock.tick(FPS)

@@ -28,7 +28,7 @@ class Blob:
 
         self.max_vel = 10
 
-        self.reduce_amount = 5
+        self.reduce_amount = 3
 
         self.SHOW = True
 
@@ -58,8 +58,9 @@ class Blob:
 
         return new_blob
 
-    def spawn(self, rad):
-        dist = randrange(0, int(self.rad))
+    def spawn(self):
+        rad = randrange(5, 10)
+        dist = randrange(0, int(self.rad) - rad)
         angle = randrange(0, 620) / 100
 
         pos = gf.get_point_from_angle(self.pos, dist, angle)
@@ -72,6 +73,8 @@ class Blob:
 
         return new_blob
 
+    def eject(self, force):
+        self.vel += force
 
     def cap_velocity(self):
         pass
@@ -86,7 +89,7 @@ def spawn_blobs(parent, n):
     spawned = []
 
     for i in range(n):
-        new_blob = parent.spawn(5)
+        new_blob = parent.spawn()
         spawned.append(new_blob)
 
     return spawned
