@@ -5,7 +5,7 @@ from src import settings as sett
 
 
 from src.settings import WIDTH, HEIGHT, clock, FPS
-from src.blob import spawn_blobs
+from src.blob import spawn_blobs, check_all_collisions, update_all, push_all
 from src.drawing_functions import draw_screen
 
 import pygame
@@ -51,6 +51,12 @@ def main():
                 if event.key in [K_q, K_ESCAPE]:
                     run_main = False
 
+                if event.key == K_p:
+                    push_all(GV.all_blobs)
+
+                if event.key == K_RETURN:
+                    pass
+
                 if event.key == K_SPACE:
                     spawned = spawn_blobs(GV.blob1, 4)
                     GV.all_blobs += spawned
@@ -67,6 +73,8 @@ def main():
             pos = pygame.mouse.get_pos()
 
         GV.blob1.shrink(30/FPS)
+        check_all_collisions(GV.all_blobs)
+        update_all(GV.all_blobs)
 
         pygame.display.update()
         clock.tick(FPS)

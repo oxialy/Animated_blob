@@ -18,13 +18,15 @@ def draw_test(win):
             word = 'non' * i
             write_text()
 
+    write_text(win, len(GV.all_blobs), (200,30))
+
 
 def draw_screen(win):
     win.fill(bg_color)
 
     draw_elem(win, GV.all_blobs)
 
-    #draw_test(win)
+    draw_test(win)
 
 
 def draw_elem(win, elements):
