@@ -19,9 +19,10 @@ def draw_test(win):
             write_text()
 
 
-
 def draw_screen(win):
     win.fill(bg_color)
+
+    draw_elem(win, GV.all_blobs)
 
     #draw_test(win)
 

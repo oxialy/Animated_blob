@@ -15,11 +15,12 @@ from random import randrange, choice
 
 class Blob:
 
-    COLORS_NAME = ['blue2', 'green2', 'yellow1', 'red1', 'purple1', 'black', 'orange2']
+    COLORS_NAME = ['blue2', 'green2', 'yellow1', 'red1', 'purple1', 'black1', 'orange2']
 
     def __init__(self, pos, rad, col=colors['lightblue1']):
         self.pos = Vector2(pos)
         self.rad = rad
+        self.true_rad = rad
 
         self.col = col
 
@@ -27,8 +28,16 @@ class Blob:
 
         self.max_vel = 10
 
+        self.reduce_amount = 5
+
+        self.SHOW = True
+
     def draw(self, win):
-        pass
+        if self.SHOW:
+            pygame.draw.circle(win, self.col, self.pos, self.rad)
+        else:
+            pygame.draw.circle(win, self.col, self.pos, self.rad, 2)
+
 
     def move(self):
         self.pos += self.vel
@@ -45,24 +54,32 @@ class Blob:
         max_x = int(x + self.rad)
 
         pos = randrange(min_x, max_x)
-
         new_blob = Blob(pos, rad)
+
         return new_blob
 
     def spawn(self, rad):
-        x, y = self.pos
-
-        dist = randrange(0, self.rad)
+        dist = randrange(0, int(self.rad))
         angle = randrange(0, 620) / 100
 
         pos = gf.get_point_from_angle(self.pos, dist, angle)
 
-        new_blob = Blob(pos, rad)
+        color_name = choice(self.COLORS_NAME)
+        col = colors[color_name]
+
+        new_blob = Blob(pos, rad, col=col)
+        self.true_rad -= self.reduce_amount
+
         return new_blob
 
 
     def cap_velocity(self):
         pass
+
+    def shrink(self, rate):
+        if self.rad > self.true_rad:
+            self.rad -= rate
+
 
 
 def spawn_blobs(parent, n):

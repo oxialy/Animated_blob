@@ -5,14 +5,16 @@ from src import msc
 
 from .drawing_variables import colors
 from .settings import WIDTH, HEIGHT
+from .blob import Blob
 
 
 import pygame
 
+all_blobs = []
 
-CX, CY = sett.WIDTH//2, sett.HEIGHT//2
+blob1 = Blob((300,300), 50)
 
-
+all_blobs = [blob1]
 
 
 questions = [

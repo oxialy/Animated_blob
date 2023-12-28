@@ -1,10 +1,11 @@
 from src import game_functions as GF
 from src import game_variables as GV
 from src import logs
-
 from src import settings as sett
-from src.settings import WIDTH, HEIGHT, clock, FPS
 
+
+from src.settings import WIDTH, HEIGHT, clock, FPS
+from src.blob import spawn_blobs
 from src.drawing_functions import draw_screen
 
 import pygame
@@ -51,7 +52,11 @@ def main():
                     run_main = False
 
                 if event.key == K_SPACE:
-                    pass
+                    spawned = spawn_blobs(GV.blob1, 4)
+                    GV.all_blobs += spawned
+
+                    GV.blob1.SHOW = False
+
                 if event.key == K_l:
                     logs.print_logs(logs.LOG_FILE)
 
@@ -60,6 +65,8 @@ def main():
 
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()
+
+        GV.blob1.shrink(1)
 
         pygame.display.update()
         clock.tick(FPS)
