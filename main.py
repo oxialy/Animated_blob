@@ -83,7 +83,7 @@ def main():
                 pass
 
             if event.type == GV.SPAWNBLOB:
-                b = GV.blob1.spawn()
+                b = GV.blob1.spawn((3,14))
                 GV.all_blobs.append(b)
 
                 event_spec = GV.START_EVENT[GV.SPAWNBLOB]

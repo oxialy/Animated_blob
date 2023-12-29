@@ -2,7 +2,7 @@ from src import game_functions as gf
 from src import msc
 
 from src.settings import WIDTH, HEIGHT
-from src.drawing_variables import colors
+from src.drawing_variables import colors, colB
 
 
 import pygame
@@ -18,16 +18,20 @@ class Blob:
 
     COLORS_NAME = ['blue2', 'green2', 'yellow1', 'red1', 'purple1', 'black1', 'orange2']
 
-    def __init__(self, pos, rad, col=colors['lightblue1']):
+    def __init__(self, pos, rad, color_name='lightblue1'):
         self.pos = Vector2(pos)
         self.rad = rad
         self.true_rad = rad
+        self.smallest_rad = 26
         self.angle = 1
 
-        self.col = col
+        self.color_name = color_name
+        self.col1 = colors[color_name]
+        self.col2 = colors['lightgrey1']
+        self.col3 = colB[color_name]
 
         self.vel = Vector2(0, 0)
-        self.max_vel = 4
+        self.max_vel = 7
 
         self.ejection_intensity = 3
         self.reduce_amount = 1
@@ -40,9 +44,20 @@ class Blob:
 
     def draw(self, win):
         if self.SHOW:
-            pygame.draw.circle(win, self.col, self.pos, self.rad)
+            x,y = self.pos
+            w = h = self.rad * 2 * 0.75
+
+            rect = msc.centered_rect((x,y,w,h))
+            a = 2.1
+            b = 2.5
+            c = 3.5
+            d = 5.3
+
+            pygame.draw.circle(win, self.col1, self.pos, self.rad)
+            pygame.draw.arc(win, self.col2, rect, a, b, 1)
+            pygame.draw.arc(win, self.col3, rect, c, d, 1)
         else:
-            pygame.draw.circle(win, self.col, self.pos, self.rad, 2)
+            pygame.draw.circle(win, self.col1, self.pos, self.rad, 2)
 
 
     def move(self):
@@ -64,11 +79,11 @@ class Blob:
         color_name = choice(self.COLORS_NAME)
         col = colors[color_name]
 
-        new_blob = Blob(pos, rad, col=col)
+        new_blob = Blob(pos, rad, color_name=color_name)
         new_blob.angle = angle
 
         self.true_rad -= self.reduce_amount
-        self.true_rad = max(self.reduce_amount + 10, self.true_rad)
+        self.true_rad = max(self.smallest_rad, self.true_rad)
 
         return new_blob
 
@@ -107,7 +122,8 @@ def spawn_blobs(parent, n):
     spawned = []
 
     for i in range(n):
-        new_blob = parent.spawn()
+        rad_range = 2,25
+        new_blob = parent.spawn(rad_range)
         spawned.append(new_blob)
 
     return spawned

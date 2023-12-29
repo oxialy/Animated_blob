@@ -25,6 +25,17 @@ colors = {
     'purple1': '#901080',
     'black1': '#000000'
 }
+colB = {
+    'lightblue1': "#5264AA",
+    'blue2': "#4050A3",
+    'green2': "#50A050",
+    'green1': "#5151A3",
+    'orange2': "#AA9266",
+    'yellow1': "#AACC67",
+    'red1': "#A03939",
+    'purple1': "#904080",
+    'black1': '#242424'
+}
 
 
 gradient = [(r,g,b) for r,g,b in zip(range(250), range(250), range(250))]
