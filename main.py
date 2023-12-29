@@ -30,13 +30,17 @@ def initialize_grid(grid):
 
     return grid
 
-def init_userevent():
-    pygame.time.set_timer(GV.NEXT_TILES, 5000)
+def init_userevent(events):
+    for event, spec in events.items():
+        pygame.time.set_timer(event, spec['timer'])
 
+
+def reduce_timer(event):
+    GV.START_EVENT
 
 def main():
 
-    #init_userevent()
+    init_userevent(GV.START_EVENT)
 
     run_main = True
 
@@ -54,6 +58,9 @@ def main():
                 if event.key == K_p:
                     push_all(GV.all_blobs)
 
+                if event.key == K_s:
+                    pygame.time.set_timer(GV.SPAWNBLOB, 0)
+
                 if event.key == K_RETURN:
                     pass
 
@@ -63,11 +70,26 @@ def main():
 
                     GV.blob1.SHOW = False
 
+                    if len(GV.all_blobs) > 100:
+                        for _ in range(30):
+                            i = randrange(len(GV.all_blobs))
+                            if GV.blob1 != GV.all_blobs.index(i):
+                                GV.all_blobs.pop(i)
+
                 if event.key == K_l:
                     logs.print_logs(logs.LOG_FILE)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pass
+
+            if event.type == GV.SPAWNBLOB:
+                b = GV.blob1.spawn()
+                GV.all_blobs.append(b)
+
+                event_spec = GV.START_EVENT[GV.SPAWNBLOB]
+
+                event_spec['timer'] += 10
+                pygame.time.set_timer(GV.SPAWNBLOB, event_spec['timer'])
 
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()

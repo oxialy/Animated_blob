@@ -17,6 +17,12 @@ blob1 = Blob((300,300), 50)
 all_blobs = [blob1]
 
 
+SPAWNBLOB = pygame.USEREVENT
+
+START_EVENT = {
+    SPAWNBLOB: {'timer': 200}
+}
+
 questions = [
     {'title': 1, 'answers': [1,2,3]},
     {'title': 2, 'answers': [1,2,3]},

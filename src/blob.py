@@ -56,7 +56,7 @@ class Blob:
     def spawn(self, radius_range=(5,10)):
         start, end = radius_range
         rad = randrange(start, end)
-        dist = randrange(0, int(self.rad) - rad )
+        dist = randrange(1, int(self.rad) - rad )
         angle = randrange(0, 620) / 100
 
         pos = gf.get_point_from_angle(self.pos, dist, angle)
