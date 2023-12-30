@@ -91,7 +91,7 @@ def main():
                 pass
 
             if event.type == GV.SPAWNBLOB:
-                if len(GV.all_blobs) <= 15:
+                if len(GV.all_blobs) <= 21:
                     b = GV.blob1.spawn((5,12))
                     GV.all_blobs.append(b)
 

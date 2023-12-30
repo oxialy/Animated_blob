@@ -36,7 +36,7 @@ def update_holes(holes):
     for hole in holes:
         hole.add_timer()
 
-        if hole.timer >= 18:
+        if hole.timer >= 26:
             print('stop')
 
             hole.paired.paired = None

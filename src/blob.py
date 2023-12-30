@@ -134,7 +134,7 @@ class Blob:
 
     def apply_force(self):
         if self.paired:
-            force = msc.get_force(self.paired.pos, self.pos, 0, 14)
+            force = msc.get_force(self.paired.pos, self.pos, 0, 20)
 
             self.vel += force
 
