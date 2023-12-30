@@ -21,6 +21,8 @@ class Hole:
         self.size = size
 
         self.col = colors['red1']
+
+        self.paired = None
         self.timer = 0
 
     def draw(self, win):
@@ -34,7 +36,11 @@ def update_holes(holes):
     for hole in holes:
         hole.add_timer()
 
-        if hole.timer <= 0:
+        if hole.timer >= 18:
+            print('stop')
+
+            hole.paired.paired = None
+            hole.paired.STATUS = 'stop'
             holes.remove(hole)
 
     return holes

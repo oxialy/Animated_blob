@@ -6,6 +6,7 @@ from src import settings as sett
 
 from src.settings import WIDTH, HEIGHT, clock, FPS
 from src.blob import spawn_blobs, check_all_collisions, update_all, push_all
+from src.hole import update_holes
 from src.drawing_functions import draw_screen
 
 import pygame
@@ -62,7 +63,12 @@ def main():
                     pygame.time.set_timer(GV.SPAWNBLOB, 0)
 
                 if event.key == K_RETURN:
-                    pygame.time.set_timer(GV.SPAWNBLOB, 160)
+                    if len(GV.all_blobs) > 6:
+                        GV.all_blobs = [GV.blob1, GV.blob0]
+                        GV.blob1.reset()
+                    else:
+                        pygame.time.set_timer(GV.SPAWNBLOB, 90)
+
 
                 if event.key == K_SPACE:
                     n = randrange(3, 11)
@@ -85,8 +91,8 @@ def main():
                 pass
 
             if event.type == GV.SPAWNBLOB:
-                if len(GV.all_blobs) <= 7:
-                    b = GV.blob1.spawn((3,8))
+                if len(GV.all_blobs) <= 15:
+                    b = GV.blob1.spawn((5,12))
                     GV.all_blobs.append(b)
 
                     event_spec = GV.START_EVENT[GV.SPAWNBLOB]
@@ -94,13 +100,13 @@ def main():
                     pygame.time.set_timer(GV.SPAWNBLOB, 0)
 
 
-
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()
 
         GV.blob1.shrink(30/FPS)
         check_all_collisions(GV.all_blobs)
-        GV.all_blobs = update_all(GV.all_blobs)
+        GV.all_blobs, GV.all_holes = update_all(GV.all_blobs, GV.all_holes)
+        GV.all_holes = update_holes(GV.all_holes)
 
         pygame.display.update()
         clock.tick(FPS)

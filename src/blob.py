@@ -19,6 +19,7 @@ from random import randrange, choice
 class Blob:
 
     COLORS_NAME = ['blue2', 'green2', 'yellow1', 'red1', 'purple1', 'black1', 'orange2']
+    COLORS_NAME = ['blue2', 'red1', 'purple1', 'black1']
 
     def __init__(self, pos, rad, color_name='lightblue1'):
         self.pos = Vector2(pos)
@@ -33,29 +34,30 @@ class Blob:
         self.col3 = colB[color_name]
 
         self.vel = Vector2(0, 0)
-        self.max_vel = 20
+        self.max_vel = 18
 
-        self.ejection_intensity = 5
-        self.reduce_amount = 6
+        self.ejection_intensity = 2
+        self.reduce_amount = 4
 
         self.positions = []
         self.track_cd = 10
 
         self.paired = None
 
-        self.MAIN = False
+        self.type = 2
         self.SHOW = True
         self.COLLIDED = False
         self.STATUS = 1
         self.SHRINKING = False
         self.ANIMATE = 0
+        self.STOPPED = 0
 
         self.shake_vector = Vector2(0, 1)
 
         self.timer = 0
 
     def __repr__(self):
-        return repr(self.angle)
+        return repr(self.type)
 
     def draw(self, win):
         if self.SHOW:
@@ -72,7 +74,7 @@ class Blob:
             pygame.draw.arc(win, self.col2, rect, a, b, 1)
             pygame.draw.arc(win, self.col3, rect, c, d, 1)
         else:
-            pygame.draw.circle(win, self.col1, self.pos, self.rad, 2)
+            pass
 
         if self.rad in [6,11]:
             self.draw_positions(win)
@@ -92,7 +94,7 @@ class Blob:
 
             norm = sqrt((x**2 + y**2))
 
-            new_norm = norm - ((0.15 * norm) + (norm**2 / 60)) - 0.3
+            new_norm = norm - ((0.12 * norm) + (norm**2 / 150)) - 0.1
             new_norm = max(0, new_norm)
 
             k = new_norm / norm
@@ -103,18 +105,21 @@ class Blob:
     def spawn(self, radius_range=(5,10)):
         start, end = radius_range
         rad = randrange(start, end)
-        dist = 1
+        dist = 2
         angle = randrange(0, 620) / 100
+        intensity = randrange(5,40)
 
         pos = gf.get_point_from_angle(self.pos, dist, angle)
+        pos2 = msc.get_point_from_angle(pos, intensity, angle)
+
+        force = msc.get_force(pos, pos2, 0, 5)
 
         color_name = choice(self.COLORS_NAME)
         col = colors[color_name]
 
         new_blob = Blob(pos, rad, color_name=color_name)
         new_blob.angle = angle
-
-        new_blob.vel = Vector2()
+        new_blob.vel += force * intensity
 
         self.true_rad -= self.reduce_amount
         #self.true_rad = max(self.smallest_rad, self.true_rad)
@@ -129,7 +134,7 @@ class Blob:
 
     def apply_force(self):
         if self.paired:
-            force = msc.get_force(self.paired.pos, self.pos, 0, 10)
+            force = msc.get_force(self.paired.pos, self.pos, 0, 14)
 
             self.vel += force
 
@@ -144,11 +149,16 @@ class Blob:
                 self.vel *= k
 
     def shrink(self, rate):
-        if self.MAIN:
+        if self.type == 1:
             if self.rad > self.true_rad:
                 self.rad -= rate
         else:
             self.rad -= rate
+
+    def reset(self):
+        self.rad = 50
+        self.true_rad = 50
+        self.STATUS = 1
 
     def add_pos(self):
         if len(self.positions) < 50:
@@ -169,9 +179,13 @@ class Blob:
 
     def spawn_hole(self):
         pos = msc.get_point_from_angle(self.pos, -self.angle, 4)
-        new_hole = Hole(pos)
-        return new_hole
 
+        new_hole = Hole(pos)
+
+        self.paired = new_hole
+        new_hole.paired = self
+
+        return new_hole
 
 def spawn_blobs(parent, n):
     spawned = []
@@ -185,12 +199,13 @@ def spawn_blobs(parent, n):
 
 def check_all_collisions(all_blobs):
     for blob in all_blobs:
-        collided = blob.check_collision(all_blobs)
-        if collided and blob.rad < collided.rad:
+        collided = blob.check_collision(all_blobs[::-1])
+        if collided and blob.type != 1 and collided.type == 0:
             angle = msc.get_angle(collided.pos, blob.pos)
             blob.eject(angle)
 
-def update_all(blobs):
+
+def update_all(blobs, holes):
     for blob in blobs:
         blob.move()
         blob.decelerate()
@@ -201,17 +216,23 @@ def update_all(blobs):
         blob.cap_velocity()
         blob.track_cd += 1
 
+        norm = sqrt(blob.vel[0]**2 + blob.vel[1]**2)
+        if blob.type != 1 and norm < 0.3 and not blob.paired and blob.STATUS != 'stop' and blob.timer > 8:
+            new_hole = blob.spawn_hole()
+            holes.append(new_hole)
+
         if blob.rad < 2:
             blob.STATUS = 0
         if not blob.STATUS:
             blobs.remove(blob)
 
+        blob.timer += 1
+
         '''if blob.track_cd >= 10:
             blob.add_pos()
             blob.track_cd = 0'''
 
-
-    return blobs
+    return blobs, holes
 
 
 def push_all(blobs):

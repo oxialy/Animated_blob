@@ -7,7 +7,7 @@ vel = Vector2(2,2)
 
 l = [1,2,3]
 
-print(l.index(0))
+print(l[::-1])
 
 l.pop(2)
 
