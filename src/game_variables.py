@@ -12,7 +12,8 @@ import pygame
 
 all_blobs = []
 
-blob1 = Blob((300,300), 50)
+blob1 = Blob((300,300), 20)
+blob1.MAIN = True
 
 all_blobs = [blob1]
 
@@ -20,7 +21,7 @@ all_blobs = [blob1]
 SPAWNBLOB = pygame.USEREVENT
 
 START_EVENT = {
-    SPAWNBLOB: {'timer': 200}
+    SPAWNBLOB: {'timer': 170}
 }
 
 questions = [

@@ -1,8 +1,10 @@
 from src import game_functions as gf
 from src import msc
 
+
 from src.settings import WIDTH, HEIGHT
 from src.drawing_variables import colors, colB
+from src.hole import Hole
 
 
 import pygame
@@ -31,13 +33,26 @@ class Blob:
         self.col3 = colB[color_name]
 
         self.vel = Vector2(0, 0)
-        self.max_vel = 7
+        self.max_vel = 20
 
-        self.ejection_intensity = 3
-        self.reduce_amount = 1
+        self.ejection_intensity = 5
+        self.reduce_amount = 6
 
+        self.positions = []
+        self.track_cd = 10
+
+        self.paired = None
+
+        self.MAIN = False
         self.SHOW = True
         self.COLLIDED = False
+        self.STATUS = 1
+        self.SHRINKING = False
+        self.ANIMATE = 0
+
+        self.shake_vector = Vector2(0, 1)
+
+        self.timer = 0
 
     def __repr__(self):
         return repr(self.angle)
@@ -59,19 +74,36 @@ class Blob:
         else:
             pygame.draw.circle(win, self.col1, self.pos, self.rad, 2)
 
+        if self.rad in [6,11]:
+            self.draw_positions(win)
+
+    def draw_positions(self, win):
+        for pos in self.positions:
+            x, y = pos
+            pygame.draw.circle(win, self.col2, (x,y), 2)
 
     def move(self):
         self.pos += self.vel
+        self.angle = msc.get_angle((0,0), self.vel)
 
     def decelerate(self):
-        x, y = self.vel
-        self.vel[0] = x - ((0.1 * x) + (x**2 / 60))
-        self.vel[1] = y - ((0.1 * y) + (y**2 / 60))
+        if self.vel != (0,0):
+            x, y = self.vel
+
+            norm = sqrt((x**2 + y**2))
+
+            new_norm = norm - ((0.15 * norm) + (norm**2 / 60)) - 0.3
+            new_norm = max(0, new_norm)
+
+            k = new_norm / norm
+
+            self.vel[0] = x * k
+            self.vel[1] = y * k
 
     def spawn(self, radius_range=(5,10)):
         start, end = radius_range
         rad = randrange(start, end)
-        dist = randrange(1, int(self.rad) - rad )
+        dist = 1
         angle = randrange(0, 620) / 100
 
         pos = gf.get_point_from_angle(self.pos, dist, angle)
@@ -82,8 +114,10 @@ class Blob:
         new_blob = Blob(pos, rad, color_name=color_name)
         new_blob.angle = angle
 
+        new_blob.vel = Vector2()
+
         self.true_rad -= self.reduce_amount
-        self.true_rad = max(self.smallest_rad, self.true_rad)
+        #self.true_rad = max(self.smallest_rad, self.true_rad)
 
         return new_blob
 
@@ -93,6 +127,11 @@ class Blob:
     def push(self, angle):
         self.vel += Vector2(cos(angle), sin(angle)) * self.ejection_intensity
 
+    def apply_force(self):
+        if self.paired:
+            force = msc.get_force(self.paired.pos, self.pos, 0, 10)
+
+            self.vel += force
 
     def cap_velocity(self):
         if self.vel != (0,0):
@@ -105,8 +144,19 @@ class Blob:
                 self.vel *= k
 
     def shrink(self, rate):
-        if self.rad > self.true_rad:
+        if self.MAIN:
+            if self.rad > self.true_rad:
+                self.rad -= rate
+        else:
             self.rad -= rate
+
+    def add_pos(self):
+        if len(self.positions) < 50:
+            x, y = self.pos
+            self.positions.append((x,y))
+
+    def add_timer(self):
+        self.track_cd -= 1
 
     def check_collision(self, all_elem):
         for elem in all_elem:
@@ -116,6 +166,11 @@ class Blob:
             rect = msc.centered_rect((x, y, w, h))
             if self != elem and rect.collidepoint(self.pos):
                 return elem
+
+    def spawn_hole(self):
+        pos = msc.get_point_from_angle(self.pos, -self.angle, 4)
+        new_hole = Hole(pos)
+        return new_hole
 
 
 def spawn_blobs(parent, n):
@@ -140,7 +195,23 @@ def update_all(blobs):
         blob.move()
         blob.decelerate()
 
+        if blob.paired:
+            blob.apply_force()
+
         blob.cap_velocity()
+        blob.track_cd += 1
+
+        if blob.rad < 2:
+            blob.STATUS = 0
+        if not blob.STATUS:
+            blobs.remove(blob)
+
+        '''if blob.track_cd >= 10:
+            blob.add_pos()
+            blob.track_cd = 0'''
+
+
+    return blobs
 
 
 def push_all(blobs):

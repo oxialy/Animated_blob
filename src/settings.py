@@ -4,11 +4,12 @@ pygame.font.init()
 
 WIDTH, HEIGHT = 600,560
 
-FPS = 40
+FPS = 15
 
 clock = pygame.time.Clock()
 
 
+FONT10 = pygame.font.SysFont('arial', 10)
 FONT12 = pygame.font.SysFont('calibri', 12)
 FONT15 = pygame.font.SysFont('arial', 15)
 FONT20 = pygame.font.SysFont('calibri', 20)

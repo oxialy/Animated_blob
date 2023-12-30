@@ -40,7 +40,7 @@ def reduce_timer(event):
 
 def main():
 
-    init_userevent(GV.START_EVENT)
+    #init_userevent(GV.START_EVENT)
 
     run_main = True
 
@@ -62,10 +62,11 @@ def main():
                     pygame.time.set_timer(GV.SPAWNBLOB, 0)
 
                 if event.key == K_RETURN:
-                    pass
+                    pygame.time.set_timer(GV.SPAWNBLOB, 160)
 
                 if event.key == K_SPACE:
-                    spawned = spawn_blobs(GV.blob1, 4)
+                    n = randrange(3, 11)
+                    spawned = spawn_blobs(GV.blob1, n)
                     GV.all_blobs += spawned
 
                     GV.blob1.SHOW = False
@@ -73,8 +74,9 @@ def main():
                     if len(GV.all_blobs) > 100:
                         for _ in range(30):
                             i = randrange(len(GV.all_blobs))
-                            if GV.blob1 != GV.all_blobs.index(i):
+                            if GV.blob1 != GV.all_blobs[i]:
                                 GV.all_blobs.pop(i)
+
 
                 if event.key == K_l:
                     logs.print_logs(logs.LOG_FILE)
@@ -83,20 +85,22 @@ def main():
                 pass
 
             if event.type == GV.SPAWNBLOB:
-                b = GV.blob1.spawn((3,14))
-                GV.all_blobs.append(b)
+                if len(GV.all_blobs) <= 7:
+                    b = GV.blob1.spawn((3,8))
+                    GV.all_blobs.append(b)
 
-                event_spec = GV.START_EVENT[GV.SPAWNBLOB]
+                    event_spec = GV.START_EVENT[GV.SPAWNBLOB]
+                else:
+                    pygame.time.set_timer(GV.SPAWNBLOB, 0)
 
-                event_spec['timer'] += 10
-                pygame.time.set_timer(GV.SPAWNBLOB, event_spec['timer'])
+
 
         if pygame.mouse.get_pressed()[0]:
             pos = pygame.mouse.get_pos()
 
         GV.blob1.shrink(30/FPS)
         check_all_collisions(GV.all_blobs)
-        update_all(GV.all_blobs)
+        GV.all_blobs = update_all(GV.all_blobs)
 
         pygame.display.update()
         clock.tick(FPS)
