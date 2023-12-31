@@ -13,7 +13,7 @@ import pygame
 
 pos = 300, 300
 
-blob1 = Blob(pos, 50)
+blob1 = Blob(pos, 35)
 blob1.type = 1
 blob0 = Blob(pos, 20)
 blob0.type = 0

@@ -25,6 +25,7 @@ class Blob:
         self.pos = Vector2(pos)
         self.rad = rad
         self.true_rad = rad
+        self.initial_rad = rad
         self.smallest_rad = 26
         self.angle = 1
 
@@ -34,10 +35,10 @@ class Blob:
         self.col3 = colB[color_name]
 
         self.vel = Vector2(0, 0)
-        self.max_vel = 30
+        self.max_vel = 38
 
         self.ejection_intensity = 15
-        self.reduce_amount = 6
+        self.reduce_amount = 4
 
         self.positions = []
         self.track_cd = 10
@@ -166,8 +167,8 @@ class Blob:
             self.rad -= rate
 
     def reset(self):
-        self.rad = 50
-        self.true_rad = 50
+        self.rad = self.initial_rad
+        self.true_rad = self.initial_rad
         self.STATUS = 1
 
     def add_pos(self):
