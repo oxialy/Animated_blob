@@ -20,13 +20,13 @@ class Hole:
         self.pos = pos
         self.size = size
 
-        self.col = colors['red1']
+        self.col = colors['grey1']
 
         self.paired = None
         self.timer = 0
 
     def draw(self, win):
-        pygame.draw.circle(win, self.col, self.pos, self.size, 2)
+        pygame.draw.circle(win, self.col, self.pos, self.size, 1)
 
     def add_timer(self):
         self.timer += 1
@@ -36,7 +36,7 @@ def update_holes(holes):
     for hole in holes:
         hole.add_timer()
 
-        if hole.timer >= 26:
+        if hole.timer >= 7:
             print('stop')
 
             hole.paired.paired = None

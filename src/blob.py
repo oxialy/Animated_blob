@@ -34,10 +34,10 @@ class Blob:
         self.col3 = colB[color_name]
 
         self.vel = Vector2(0, 0)
-        self.max_vel = 18
+        self.max_vel = 30
 
-        self.ejection_intensity = 2
-        self.reduce_amount = 4
+        self.ejection_intensity = 15
+        self.reduce_amount = 6
 
         self.positions = []
         self.track_cd = 10
@@ -79,6 +79,16 @@ class Blob:
         if self.rad in [6,11]:
             self.draw_positions(win)
 
+        if self.paired:
+            if False:
+                self.paired.draw(win)
+
+        #self.draw_angle(win)
+
+    def draw_angle(self, win):
+        B = msc.get_point_from_angle(self.pos, self.angle, 10)
+        pygame.draw.line(win, colors['grey1'], self.pos, B)
+
     def draw_positions(self, win):
         for pos in self.positions:
             x, y = pos
@@ -86,7 +96,7 @@ class Blob:
 
     def move(self):
         self.pos += self.vel
-        self.angle = msc.get_angle((0,0), self.vel)
+        #self.angle = msc.get_angle((0,0), self.vel)
 
     def decelerate(self):
         if self.vel != (0,0):
@@ -94,7 +104,7 @@ class Blob:
 
             norm = sqrt((x**2 + y**2))
 
-            new_norm = norm - ((0.12 * norm) + (norm**2 / 150)) - 0.1
+            new_norm = norm - ((0.28 * norm) + (norm**2 / 150)) - 0.5
             new_norm = max(0, new_norm)
 
             k = new_norm / norm
@@ -107,10 +117,10 @@ class Blob:
         rad = randrange(start, end)
         dist = 2
         angle = randrange(0, 620) / 100
-        intensity = randrange(5,40)
+        intensity = randrange(5,15)
 
-        pos = gf.get_point_from_angle(self.pos, dist, angle)
-        pos2 = msc.get_point_from_angle(pos, intensity, angle)
+        pos = msc.get_point_from_angle(self.pos, angle, dist)
+        pos2 = msc.get_point_from_angle(pos, angle, intensity)
 
         force = msc.get_force(pos, pos2, 0, 5)
 
@@ -134,7 +144,7 @@ class Blob:
 
     def apply_force(self):
         if self.paired:
-            force = msc.get_force(self.paired.pos, self.pos, 0, 20)
+            force = msc.get_force(self.pos, self.paired.pos, 0, 1)
 
             self.vel += force
 
@@ -178,12 +188,14 @@ class Blob:
                 return elem
 
     def spawn_hole(self):
-        pos = msc.get_point_from_angle(self.pos, -self.angle, 4)
+        pos = msc.get_point_from_angle(self.pos, self.angle + math.pi, 3)
 
         new_hole = Hole(pos)
 
         self.paired = new_hole
         new_hole.paired = self
+
+        #self.max_vel = 9
 
         return new_hole
 
@@ -217,7 +229,7 @@ def update_all(blobs, holes):
         blob.track_cd += 1
 
         norm = sqrt(blob.vel[0]**2 + blob.vel[1]**2)
-        if blob.type != 1 and norm < 0.3 and not blob.paired and blob.STATUS != 'stop' and blob.timer > 8:
+        if blob.type != 1 and norm < 2 and not blob.paired and blob.STATUS != 'stop' and blob.timer > 4:
             new_hole = blob.spawn_hole()
             holes.append(new_hole)
 
