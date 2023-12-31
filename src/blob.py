@@ -189,7 +189,7 @@ class Blob:
                 return elem
 
     def spawn_hole(self):
-        pos = msc.get_point_from_angle(self.pos, self.angle + math.pi, 3)
+        pos = msc.get_point_from_angle(self.pos, self.angle + math.pi, 4)
 
         new_hole = Hole(pos)
 
@@ -230,7 +230,7 @@ def update_all(blobs, holes):
         blob.track_cd += 1
 
         norm = sqrt(blob.vel[0]**2 + blob.vel[1]**2)
-        if blob.type != 1 and norm < 2 and not blob.paired and blob.STATUS != 'stop' and blob.timer > 4:
+        if blob.type != 1 and norm < 1.3 and not blob.paired and blob.STATUS != 'stop' and blob.timer > 4:
             new_hole = blob.spawn_hole()
             holes.append(new_hole)
 

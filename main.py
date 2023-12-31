@@ -67,7 +67,7 @@ def main():
                         GV.all_blobs = [GV.blob1, GV.blob0]
                         GV.blob1.reset()
                     else:
-                        pygame.time.set_timer(GV.SPAWNBLOB, 120)
+                        pygame.time.set_timer(GV.SPAWNBLOB, 100)
 
 
                 if event.key == K_SPACE:
@@ -91,8 +91,8 @@ def main():
                 pass
 
             if event.type == GV.SPAWNBLOB:
-                if len(GV.all_blobs) <= 10:
-                    b = GV.blob1.spawn((5,13))
+                if len(GV.all_blobs) <= 13:
+                    b = GV.blob1.spawn((5,12))
                     GV.all_blobs.append(b)
 
                     event_spec = GV.START_EVENT[GV.SPAWNBLOB]
